@@ -1,6 +1,7 @@
 AC_PREREQ([2.61])
 AC_INIT([largenet2], [0.3])
 AC_CANONICAL_SYSTEM
+AM_PROG_AR
 AM_INIT_AUTOMAKE([1.11 -Wall -Werror foreign silent-rules subdir-objects])
 LT_PREREQ([2.2])
 LT_INIT([disable-static])
@@ -19,7 +20,7 @@ BOOST_FOREACH
 BOOST_FUNCTION
 BOOST_TEST
 #BOOST_GRAPH
- 
+
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_SIZE_T
 AC_HEADER_STDBOOL
@@ -45,23 +46,24 @@ AM_CONDITIONAL([BUILD_EXAMPLES], [test x$examples = xtrue])
 
 AM_CONDITIONAL([HAVE_DOXYGEN], [test -n "$DOXYGEN"])
 
+# configure --enable-boost [=no]
+AC_ARG_ENABLE([boost_graph],
+  [AS_HELP_STRING([--enable-boost_graph], [Enable Boost Graph bindings (default=no)])],
+  [boost_graph="$withval"],
+  [boost_graph=no])
+
+AM_CONDITIONAL([USE_BOOST_GRAPH], [test "x$boost_graph" = "xyes"])
+
 # configure option --enable-debug [=no]
 AC_ARG_ENABLE([debug],
 			   [AS_HELP_STRING([--enable-debug], [Enable debug mode (default=no)])],
 			   [debug="$withval"],
 			   [debug=no])
 
+
 AM_CONDITIONAL([DEBUGMODE], [test "x$debug" = "xyes"])
 
 AM_CONDITIONAL([HAVE_GRAPHML], [test "x$BOOST_VERSION" \> "x1.48.0"])
-
-if $HAVE_GRAPHML ; then
-  echo "-----------------------------------------"
-  echo " Found Boost version <= 1.48.0 "
-  echo " Writing GraphML files will be disabled "
-  echo " due to broken Boost implementation  "
-  echo "-----------------------------------------"
-fi 
 
 # Output files
 AC_CONFIG_FILES([Makefile
